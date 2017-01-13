@@ -45,3 +45,35 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+.springBeans
+*.class
+*.ear
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+*versionsBackup
+*/*versionsBackup
+*.txt
+
+*/.settings/
+*/.idea/
+*/.gradle/
+*/.svn/
+*/target/
+*/build/
+*/bin/
+*/classes/
+
+.settings/
+.idea/
+.gradle/
+.svn/
+target/
+build/
+bin/
+classes/
+generated/
