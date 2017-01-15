@@ -16,7 +16,9 @@ public interface TweetService {
 
 	User follow(Long id, Long followUserId);
 
-	String unfollow(Long id, Long followUserId);
+	User unfollow(Long id, Long followUserId);
 
 	List<Tweet> getUserTweets(Long id, String keyword);
+
+	User findUser(long followUserId);
 }

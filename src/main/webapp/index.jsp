@@ -24,8 +24,10 @@ http://default-environment.igitfp4kwr.us-east-1.elasticbeanstalk.com/getfollower
 <br>
 <br>
 <b>Get - Get all user tweets(userId 100) and all users following tweet </b><br>
-http://localhost:8080/tweetservice/getUserTweets/100/keyword/test<br>
-http://default-environment.igitfp4kwr.us-east-1.elasticbeanstalk.com/getUserTweets/100/keyword/test<br>
+http://localhost:8080/tweetservice/getUserTweets?id=100<br>
+http://localhost:8080/tweetservice/getUserTweets?id=100&keyword=life<br>
+http://default-environment.igitfp4kwr.us-east-1.elasticbeanstalk.com/getUserTweets?id=100<br>
+http://default-environment.igitfp4kwr.us-east-1.elasticbeanstalk.com/getUserTweets?id=100&keyword=life<br>
 <br>
 </body>
 </html>

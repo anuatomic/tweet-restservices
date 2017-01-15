@@ -25,10 +25,16 @@ public class TweetController {
 	@Autowired
 	private TweetServiceImpl tweetService;
 
+	private String errorMessage = null;
+
 	// All users that following a particular user
 	@GetMapping("/getfollowers/{id}")
 	public ResponseEntity getFollowers(@PathVariable("id") Long id) {
 		List<User> followers = tweetService.getFollowers(id);
+		if (followers == null) {
+			errorMessage = "No followers found for User Id " + id;
+			return new ResponseEntity(errorMessage, HttpStatus.OK);
+		}
 		return new ResponseEntity(followers, HttpStatus.OK);
 	}
 
@@ -37,6 +43,10 @@ public class TweetController {
 	public ResponseEntity getFollowing(@PathVariable("id") Long id) {
 
 		List<User> following = tweetService.getFollowing(id);
+		if (following == null) {
+			errorMessage = "User Id " + id + " Is not following other users";
+			return new ResponseEntity(errorMessage, HttpStatus.OK);
+		}
 		return new ResponseEntity(following, HttpStatus.OK);
 	}
 
@@ -51,25 +61,23 @@ public class TweetController {
 	// UnFollow user - returns details on the user being unfollowed
 	@RequestMapping(value = "/unfollow/{id}/followUserId/{followUserId}", method = RequestMethod.POST)
 	public ResponseEntity unfollowUser(@PathVariable("id") Long id, @PathVariable("followUserId") Long followUserId) {
-
-		String responseFollow = tweetService.unfollow(id, followUserId);
-		return new ResponseEntity(responseFollow, HttpStatus.OK);
+		String response = null;
+		User user = tweetService.unfollow(id, followUserId);
+		if (user != null) {
+			response = "No longer following " + user.getFirstName() + "-" + user.getId();
+		}
+		user = tweetService.findUser(followUserId);
+		response = "User " + user.getFirstName() + "-" + user.getId() + " is not being followed";
+		return new ResponseEntity(response, HttpStatus.OK);
 	}
 
-	// All users tweets and users following tweet
-	@GetMapping("/getUserTweets/{id}/keyword/{keyword}")
-	/*
-	 * public ResponseEntity getUserTweets(
-	 * 
-	 * @PathVariable("id") Long id,
-	 * 
-	 * @PathVariable("keyword") String keyword) {
-	 */
-
-	public ResponseEntity getUserTweets(@PathVariable("id") Long id,
+	// Get User tweets for userID=?. If keyword value present filter tweets by
+	// keyword
+	@RequestMapping(value = "/getUserTweets", method = RequestMethod.GET)
+	public ResponseEntity getUserTweets(@RequestParam(value = "id", required = true) Long id,
 			@RequestParam(value = "keyword", required = false) String keyword) {
 		List<Tweet> userTweets = tweetService.getUserTweets(id, keyword);
 		return new ResponseEntity(userTweets, HttpStatus.OK);
-	}
 
+	}
 }
