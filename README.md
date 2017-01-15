@@ -1,9 +1,11 @@
 # tweet-restservices
-rest tweet services
+Rest tweet services
 
-URLs to use when testing services from local environment running on tomcat.  
+Test URLs to use when testing  from local and AWS deployment. <br>
 
-401 will be returned for unauthenticated users.
+AWS Deployment - http://default-environment.igitfp4kwr.us-east-1.elasticbeanstalk.com/<br>  
+
+Note - 401 will be returned for unauthenticated users.
 
 1. Get - Return all users following userId 100
 http://localhost:8080/tweetservice/getfollowing/100
