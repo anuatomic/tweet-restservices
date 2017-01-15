@@ -11,6 +11,11 @@ public class Tweet {
 		this.tweetText = tweetText;
 	}
 
+	@Override
+	public String toString() {
+		return "Tweet [tweetid=" + tweetid + ", inReplyToUserId=" + inReplyToUserId + ", tweetText=" + tweetText + "]";
+	}
+
 	public Tweet(Long tweetid, String tweetText) {
 		this.tweetid = tweetid;
 		this.inReplyToUserId = inReplyToUserId;

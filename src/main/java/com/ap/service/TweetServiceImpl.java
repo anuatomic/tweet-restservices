@@ -23,12 +23,17 @@ public class TweetServiceImpl implements TweetService {
 		return userDAO.getAllFollowing(id);
 	}
 
-	public boolean follow(Long id, Long followUserId) {
+	public User follow(Long id, Long followUserId) {
 		return userDAO.follow(id, followUserId);
 	}
 
-	public boolean unfollow(Long id, Long followUserId) {
-		return userDAO.unfollow(id, followUserId);
+	public String unfollow(Long id, Long followUserId) {
+		User user = userDAO.unfollow(id, followUserId);
+		if (user != null) {
+			return "No longer following " + user.getFirstName() + "-" + user.getId();
+		}
+		user = userDAO.findUser(followUserId);
+		return "User " + user.getFirstName() + "-" + user.getId() + " is not being followed";
 	}
 
 	public List<Tweet> getUserTweets(Long id, String keyword) {

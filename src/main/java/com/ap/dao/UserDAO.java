@@ -14,9 +14,9 @@ public interface UserDAO {
 
 	List<User> getAllFollowing(Long userId);
 
-	boolean follow(Long userId, Long followerId);
+	User follow(Long userId, Long followerId);
 
-	boolean unfollow(Long userId, Long followerId);
+	User unfollow(Long userId, Long followerId);
 
 	List<Tweet> getUserTweets(Long userId, String keyword);
 

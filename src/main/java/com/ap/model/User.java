@@ -2,6 +2,12 @@ package com.ap.model;
 
 public class User {
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", stringId=" + stringId + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", screen_name=" + screen_name + ", email=" + email + "]";
+	}
+
 	private Long id;
 	private String stringId;
 	private String firstName;

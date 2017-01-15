@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Component;
 
@@ -52,39 +53,70 @@ public class UserDAOImpl extends JdbcDaoSupport implements UserDAO {
 
 	}
 
-	// return user being followed
-	public boolean follow(Long userId, Long followerId) {
-		// Add logic to make sure user is not already being followed
-		log.debug("UserDAOImpl.follow() - Executing");
-		String sqlb = "INSERT into innodb.following_table(u_id, fu_id) VALUES (?, ?)";
-		int rowsInserted = this.getJdbcTemplate()
-				.update("insert into innodb.following_table (u_id, fu_id) values (?, ?)", userId, followerId);
-		if (rowsInserted > 0) {
-			return true;
-
-		}
-		return false;
-
-	}
-
 	// return user being unfollowed
-	public boolean unfollow(Long userId, Long followerId) {
+	public User unfollow(Long userId, Long followerId) {
+		User user = null;
 		log.debug("UserDAOImpl.unfollow() - Executing");
 		String sqlb = "DELETE from innodb.following_table WHERE u_id = ? and fu_id = ?";
 		int rowsDeleted = this.getJdbcTemplate().update(sqlb, userId, followerId);
 		if (rowsDeleted > 0) {
-			return true;
+			user = findUser(followerId);
+		}
+		return user;
 
+	}
+
+	// return user being followed
+	public User follow(Long userId, Long followerId) {
+
+		log.debug("UserDAOImpl.follow() - Executing");
+		boolean following = isFollowing(userId, followerId);
+
+		// Add logic to make sure user is not already being followed
+		if (!following) {
+			String sqlb = "INSERT into innodb.following_table(u_id, fu_id) VALUES (?, ?)";
+			int rowsInserted = this.getJdbcTemplate()
+					.update("insert into innodb.following_table (u_id, fu_id) values (?, ?)", userId, followerId);
+		}
+		User followingUser = findUser(followerId);
+
+		return followingUser;
+
+	}
+
+	public User findUser(Long id) {
+
+		String sql = "SELECT * FROM innodb.user WHERE id = ?";
+
+		User user = (User) this.getJdbcTemplate().queryForObject(sql, new Object[] { id },
+				new BeanPropertyRowMapper(User.class));
+		return user;
+	}
+
+	private boolean isFollowing(Long userId, Long followerId) {
+
+		String sqlb = "select COUNT(*) from innodb.following_table ft where ft.u_id = ? and ft.fu_id = ?";
+
+		Integer count = this.getJdbcTemplate().queryForObject(sqlb, new Object[] { userId, followerId }, Integer.class);
+		if (count > 0) {
+			return true;
 		}
 		return false;
-
 	}
 
 	public List<Tweet> getUserTweets(Long userId, String keyword) {
 
+		/*
+		 * String sql = "select t.* from innodb.tweet as t where user_id =" +
+		 * userId +
+		 * " union select t.* from innodb.tweet as t where t.id in (select tweet_id from innodb.retweet where user_id = "
+		 * + userId + ")";
+		 */
+
 		String sql = "select t.* from innodb.tweet as t where user_id =" + userId
 				+ " union select t.* from innodb.tweet as t where t.id in (select tweet_id from innodb.retweet where user_id = "
-				+ userId + ")";
+				+ userId + " AND t.text LIKE '%" + keyword + "%')";
+
 		log.debug("UserDAOImpl.getUserTweets() - Executing");
 		List<Tweet> tweets = new ArrayList();
 		List<Map<String, Object>> list = this.getJdbcTemplate().queryForList(sql);

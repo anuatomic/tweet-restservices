@@ -11,8 +11,10 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.ap.model.Tweet;
 import com.ap.model.User;
 
 public class DaoTest {
@@ -74,6 +76,50 @@ public class DaoTest {
 
 		}
 		assertTrue(inserted);
+
+	}
+
+	@Test
+	public void testIsFollowing() {
+
+		String sqlb = "select COUNT(*) from innodb.following_table ft where ft.u_id = ? and ft.fu_id = ?";
+
+		Integer count = jdbcTemplate.queryForObject(sqlb, new Object[] { 102, 102 }, Integer.class);
+		if (count > 0) {
+			System.out.println("rec count " + count);
+		}
+
+	}
+
+	@Test
+	public void findUser() {
+
+		String sql = "SELECT * FROM innodb.user WHERE id = ?";
+
+		User user = (User) jdbcTemplate.queryForObject(sql, new Object[] { 101 },
+				new BeanPropertyRowMapper(User.class));
+		System.out.println(user.toString());
+
+	}
+
+	@Test
+	public void getUserTweets() {
+
+		Long userId = 100l;
+		// String keyword = "";
+		String keyword = "genie";
+
+		String sql = "select t.* from innodb.tweet as t where user_id =" + userId
+				+ " union select t.* from innodb.tweet as t where t.id in (select tweet_id from innodb.retweet where user_id = "
+				+ userId + " AND t.text LIKE '%" + keyword + "%')";
+		System.out.println(sql);
+		List<Tweet> tweets = new ArrayList();
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+		for (Map<String, Object> row : list) {
+			Tweet tweet = new Tweet(Long.valueOf(row.get("id").toString()), row.get("text").toString());
+			System.out.println(tweet.toString());
+			tweets.add(tweet);
+		}
 
 	}
 
